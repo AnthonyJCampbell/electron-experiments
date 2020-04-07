@@ -7,5 +7,32 @@
 </head>
 <body>
     <h1>Video Info</h1>
+    <form>
+        <div>
+            <label>Select a video</label>
+            <input type="file" accept="video/*" />
+        </div>
+        <button type="submit">Get Info</button>
+    </form>
+
+    <h1 id="result"></h1>
+
+    <script>
+        // This is CommonJS code, native to Node. However, Electron allows us to use this.
+        const electron = require('electron')
+        const { ipcRenderer } = electron;
+
+        document.querySelector('form').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const { path } = document.querySelector('input').files[0];
+
+            // First arg is event name (which is up to us!)
+            ipcRenderer.send('video:submit', path);
+        })
+
+        ipcRenderer.on("video:metadata", (event, duration) => {
+            document.querySelector('#result').innerHTML = `Video is ${duration} seconds long`
+        })
+    </script>
 </body>
 </html>
